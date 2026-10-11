@@ -1,56 +1,149 @@
-# React + Vite
+# 🧠 AI Learning Copilot
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> An intelligent, multilingual AI copilot for multimodal learning. Extract knowledge, generate structured notes, and chat with your YouTube videos, PDF documents, and web research using **Source-Isolated RAG**, **Google Gemini**, and **Qdrant Vector Database**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Key Features
 
-## React Compiler
+* **🎥 YouTube Video Copilot (Ask AI Style)**
+  * Extracts transcripts automatically using `youtube-transcript`.
+  * Generates clean, natural summaries and comprehensive notes.
+  * Dynamically adapts to any content: coding tutorials, lectures, podcasts, or music lyrics.
+* **📄 PDF Document Deep Learning**
+  * Parses and chunks complex PDF documents using LangChain's recursive splitters.
+  * Embeds and indexes content into Qdrant for semantic search.
+* **🌐 Web Article & Autonomous Research**
+  * Real-time web scraping with Cheerio and intelligent web search via Tavily API.
+  * Synthesizes web articles into structured takeaways.
+* **💬 Source-Isolated Multilingual RAG Q&A**
+  * Strict vector isolation: chatbot queries search **only** chunks belonging to the active source document.
+  * Full multilingual support: **English**, **Hindi (हिन्दी)**, **Hinglish**, **Spanish (Español)**, and **French (Français)**.
+  * Real-time retrieval inspector showing similarity scores and context chunks.
+* **⚡ Production-Ready Resiliency & Caching**
+  * Dual-layer caching in MongoDB by language to eliminate redundant API calls.
+  * Automatic retries with exponential backoff for high-demand spikes (`503` / `429`).
+  * One-click **🔄 Regenerate** to refresh notes on demand.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+---
 
-Note: This will impact Vite dev & build performances.
-You can also try [the experimental native React Compiler support in plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md#rust-react-compiler) by using `compiler: true` in the plugin options instead of using the Babel plugin.
+## 🛠️ Architecture & Tech Stack
 
-## Expanding the ESLint configuration
+```
+[ Frontend: React 19 + Vite ] 
+              │
+              ▼  HTTP / REST
+[ Backend: Express.js (Node.js) ]
+       │            │            │
+       ▼            ▼            ▼
+[ Google Gemini ] [ Qdrant DB ] [ MongoDB ]
+ (LLM & Embeddings) (Vector Store) (Document Cache)
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| Layer | Technology |
+| :--- | :--- |
+| **Frontend** | React 19, Vite, Vanilla CSS (Glassmorphism Dark UI) |
+| **Backend** | Node.js, Express.js (ES Modules) |
+| **LLM & Embeddings** | Google Gemini (`gemini-3.8-flash` / `gemini-embedding-001`) |
+| **Vector Database** | Qdrant Cloud |
+| **Database & Cache** | MongoDB Atlas via Mongoose |
+| **RAG Pipeline** | LangChain Text Splitters, Cosine Similarity Filtering |
+| **Data Extraction** | `youtube-transcript`, `pdf-parse`, `cheerio`, `axios` |
+| **Web Research** | Tavily Search API |
 
+---
 
+## 📁 Project Structure
 
-If input is a URL:
-Scrapes the web page with Cheerio.
-Saves to MongoDB.
-Indexes into Qdrant via RAG.
-If input is a Query / Question:
-LLM understands the question and optimizes the search topic.
-Tavily searches the web and returns candidate URLs.
-Cheerio scrapes the top valid URL (with automatic fallback to next URL if one is blocked).
-Saves to MongoDB.
-RAG chunks and stores the vectors into Qdrant.
-RAG queries Qdrant and LLM generates the answer to the user's question with source citations!
+```bash
+AI-learning-copilot/
+├── backend/
+│   ├── agents/
+│   │   └── llm.js                 # Gemini LLM client with retry & fallback
+│   ├── controllers/
+│   │   ├── youtubecontroller.js   # YouTube transcript & notes controller
+│   │   ├── pdfcontroller.js       # PDF ingestion & notes controller
+│   │   ├── articlecontroller.js   # Web scraping & article controller
+│   │   └── webResearchController.js # Tavily search integration
+│   ├── models/                    # MongoDB schemas (Transcript, PDF, Article)
+│   ├── RAG/                       # Qdrant indexing & similarity retrieval pipelines
+│   ├── routes/                    # API endpoints
+│   ├── services/                  # Multilingual helpers & transcript services
+│   └── index.js                   # Express server entry point
+├── src/
+│   ├── components/
+│   │   ├── OnboardingChatbot.jsx  # Smart conversational input interface
+│   │   └── LearningWorkspace.jsx  # Workspace with Notes & RAG Chatbot
+│   ├── api.js                     # Frontend API client
+│   ├── App.jsx                    # Root view controller
+│   └── index.css                  # Modern design system & tokens
+├── package.json
+└── README.md
+```
 
+---
 
+## ⚙️ Getting Started
 
-what is pid 
-5:22 PM
-PID stands for Process Identifier (Process ID).
+### 1. Prerequisites
+* **Node.js**: v18.0.0 or higher
+* **MongoDB**: A free MongoDB Atlas cluster connection string
+* **Qdrant**: A free Qdrant Cloud cluster URL & API key
+* **Google Gemini API Key**: From [Google AI Studio](https://aistudio.google.com/)
 
-What is it?
-Every time you run a program or script on your computer (like node index.js, Chrome, VS Code, etc.), Windows or Linux creates an active Process for it in memory.
+---
 
-To keep track of and control each running program, the operating system assigns it a unique numeric ID called the PID.
+### 2. Backend Setup
 
-How it related to your issue:
-Yesterday, when you ran node index.js, Windows gave that running server process a specific number: PID 40360.
-That process was holding port 5000. Even when you closed or restarted other terminal windows, that specific process (PID 40360) kept running silently in the background.
-Because we knew its PID (40360), we were able to tell Windows to directly terminate that exact process:
-powershell
-Stop-Process -Id 40360 -Force
-Once terminated, port 5000 was freed up so your new server with the new Gemini API key could run.
-Where can you see PIDs?
-Windows Task Manager: Press Ctrl + Shift + Esc, click Details tab, and you will see a column named PID.
-Terminal: Commands like netstat -ano or tasklist list all active connections along with their PIDs.
-5:22 PM
+1. Open terminal and navigate to `backend/`:
+   ```bash
+   cd backend
+   npm install
+   ```
+
+2. Create a `.env` file inside `backend/`:
+   ```env
+   PORT=5000
+   MONGO_URI=your_mongodb_connection_string
+   GEMINI_API_KEY=your_gemini_api_key
+   qdrant_URL=your_qdrant_cluster_url
+   api_key_Qdrant=your_qdrant_api_key
+   TAVILY_API_KEY=your_tavily_api_key # Optional for web search
+   ```
+
+3. Start the backend server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+### 3. Frontend Setup
+
+1. In a new terminal window from the project root:
+   ```bash
+   npm install
+   ```
+
+2. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser at `http://localhost:5173`.
+
+---
+
+## 🌐 Supported Multilingual Options
+
+* **English**
+* **Hindi (हिन्दी)**
+* **Hinglish** (Natural mixed Hindi-English)
+* **Spanish (Español)**
+* **French (Français)**
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License.
